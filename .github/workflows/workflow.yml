@@ -1,0 +1,194 @@
+#
+# This is free software, lisence use MIT.
+# 
+# 
+# <Based on https://github.com/kiddin9/openwrt-packages>
+#
+
+name: 拉取仓库并整理
+on:
+  push:
+    paths:
+      - '.github/workflows/workflow.yml'
+      - '.gitignore'
+      - '.github/diy/**'
+  schedule:
+    - cron: 0 */24 * * *
+  workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'ssh'
+        required: false
+        default: 'true'
+  watch:
+    types: started
+  repository_dispatch:
+
+jobs:
+  merge:
+    if: github.event.repository.owner.id == github.event.sender.id || ! github.event.sender.id
+    runs-on: Ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      with:
+        fetch-depth: 0
+
+    - name: 设置git身份
+      run : |
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        sudo timedatectl set-timezone "Asia/Shanghai"
+
+    - name: 拉取源码及配置
+      run: |
+        shopt -s extglob
+        set +e
+        git rm -r --cache * >/dev/null 2>&1 &
+        rm -rf `find . -maxdepth 1 -type d ! -name ".git*"` >/dev/null 2>&1
+        function git_clone() {
+          git clone --depth 1 $1 $2
+          if [ "$?" != 0 ]; then
+             echo "error on $1"
+             pid="$( ps -q $$ )"
+             kill $pid
+           fi
+        }
+        function git_sparse_clone() {
+          branch="$1" rurl="$2" localdir="${1##*/}" && shift 2
+          mkdir -p $localdir
+          git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
+          if [ "$?" != 0 ]; then
+            echo "error on $rurl"
+            pid="$( ps -q $$ )"
+            kill $pid
+          fi
+          cd $localdir
+          git sparse-checkout init --cone
+          git sparse-checkout set $@
+          mv -n $@ ../ || true
+          cd ..
+          rm -rf $localdir
+        }
+        function git_sparse_clone2() {
+          commitid="$1" rurl="$2" localdir="${1##*/}" && shift 2
+          mkdir -p $localdir
+          git clone --filter=blob:none --sparse $rurl $localdir
+          cd $localdir
+          git checkout $commitid
+          git sparse-checkout init --cone
+          git sparse-checkout set $@
+          mv -n $@ ../ || true
+          cd ..
+          rm -rf $localdir
+        }
+        function mvdir() {
+        mv -n `find $1/* -maxdepth 0 -type d` ./
+        rm -rf $1
+        }
+        (
+        git_clone https://github.com/kiddin9/luci-app-dnsfilter
+        git_clone https://github.com/kiddin9/luci-theme-edge
+        git_clone https://github.com/kiddin9/openwrt-adguardhome && mvdir openwrt-adguardhome
+        ) &
+        (
+        git_clone https://github.com/riverscn/openwrt-iptvhelper && mvdir openwrt-iptvhelper
+        ) &
+        (
+        git_clone https://github.com/jerrykuku/luci-theme-argon
+        git_clone https://github.com/jerrykuku/luci-app-argon-config
+        git_clone https://github.com/sirpdboy/netspeedtest && mv -n netspeedtest/luci-app-netspeedtest ./ ; rm -rf netspeedtest
+        git_clone https://github.com/sirpdboy/luci-app-parentcontrol
+        ) &
+        (
+        git_clone https://github.com/destan19/OpenAppFilter && mvdir OpenAppFilter
+        git_clone https://github.com/lvqier/luci-app-dnsmasq-ipset
+        git_clone https://github.com/brvphoenix/luci-app-wrtbwmon wrtbwmon1 && mvdir wrtbwmon1
+        git_clone https://github.com/brvphoenix/wrtbwmon wrtbwmon2 && mvdir wrtbwmon2
+        git_clone https://github.com/sbwml/luci-app-mosdns openwrt-mos && mv -n openwrt-mos/{*mosdns,v2dat} ./; rm -rf openwrt-mos
+        ) &
+        (
+        git_clone https://github.com/linkease/nas-packages && mv -n nas-packages/{network/services/*,multimedia/*} ./; rm -rf nas-packages
+        git_clone https://github.com/linkease/nas-packages-luci && mv -n nas-packages-luci/luci/* ./; rm -rf nas-packages-luci
+        git_clone https://github.com/linkease/istore && mv -n istore/luci/* ./; rm -rf istore
+        ) &
+        (
+        git_clone https://github.com/gSpotx2f/luci-app-log
+        # git_clone https://github.com/jjm2473/openwrt-apps && rm -rf openwrt-apps/{luci-app-cpufreq,luci-app-ota,luci-alias.mk} && sed -i "s/luci-alias.mk/..\/luci.mk/" openwrt-apps/*/Makefile && mvdir openwrt-apps
+        ) &
+        (
+        git_clone https://github.com/sundaqiang/openwrt-packages && mv -n openwrt-packages/luci-* ./; rm -rf openwrt-packages
+        git_clone https://github.com/muink/openwrt-php-nginx.git
+        git_clone https://github.com/pymumu/luci-app-smartdns
+        ) &
+        (
+        git_clone https://github.com/htynkn/openwrt-switch-lan-play && mv -n openwrt-switch-lan-play/package/* ./ && rm -rf openwrt-switch-lan-play
+        ) &
+        (
+        git_clone https://github.com/haiibo/luci-app-onliner
+        git_clone https://github.com/Ausaci/luci-app-nat6-helper
+        git clone https://github.com/gngpp/luci-theme-design -b js --depth 1
+        ) &
+        (
+        git_clone https://github.com/muink/luci-app-tinyfilemanager
+        git_sparse_clone main "https://github.com/linkease/openwrt-app-actions" applications/luci-app-rtbwmon
+        ) &
+        (
+        git clone https://github.com/sirpdboy/luci-theme-kucat -b js --depth 1
+        git_clone https://github.com/sirpdboy/luci-app-advancedplus
+        git_clone https://github.com/sirpdboy/luci-app-eqosplus && rm -rf luci-app-eqosplus/po/zh_Hans
+        )
+        rm -rf .github/diy
+        git_sparse_clone master "https://github.com/kiddin9/openwrt-packages" .github/diy && mv -f ./diy .github/diy
+
+    - name: 处理包
+      run: |
+        rm -Rf */.git
+        for pkg in $(ls -d .github/diy/packages/*); do
+          # mv -f $pkg/Makefile.k $pkg/Makefile >/dev/null 2>&1 || true
+          # [ -d ./${pkg##*/} ] && echo "处理${pkg##/}" & cp -rf $pkg ./ || true
+          true
+        done
+
+    - name: 应用补丁
+      run: |
+        find ".github/diy/patches" -type f -name '*.patch' -print0 | sort -z | xargs -I % -t -0 -n 1 sh -c "cat '%'  | patch -d './' -p1 -E --forward --no-backup-if-mismatch" || true
+
+    - name: 清理打补丁多出来的空文件夹
+      run: |
+        for dic in $(ls -d ./*); do
+          [ -f $dic/Makefile ] || rm -rf $dic
+        done
+
+    - name: 自定义修改
+      run: |
+        shopt -s extglob
+        set +e
+        bash .github/diy/convert_translation.sh -a >/dev/null 2>&1 || true
+
+        sed -i 's/\(+luci-compat\)/\1 +luci-theme-argon/' luci-app-argon-config/Makefile || true
+        echo "#page>div[data-v-d324f700]:first-child{display:none}
+        button.btn_styles.color1[data-v-0d223b54]:last-child{display:none}" >>luci-app-quickstart/htdocs/luci-static/quickstart/style.css || true
+
+    - name: 推送
+      run: |
+        Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
+        git add .
+        git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        for pkg in $(git diff-tree --no-commit-id --name-only HEAD); do
+          if [ "$(grep "PKG_RELEASE" $pkg/Makefile)" ]; then
+            sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=$(git rev-list --count master $pkg)/" $pkg/Makefile || true
+          fi
+        done
+        git reset --soft HEAD^
+        git add .
+        git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
+        git push -f
+
+    - name: 删除工作流
+      uses: Mattraks/delete-workflow-runs@main
+      continue-on-error: true
+      with:
+        retain_days: 1
+        keep_minimum_runs: 3
