@@ -1,0 +1,48 @@
+--- a/luci-app-advancedplus/luasrc/controller/advancedplus.lua
++++ b/luci-app-advancedplus/luasrc/controller/advancedplus.lua
+@@ -24,6 +24,7 @@ function index()
+ 	entry({"admin","system","advancedplus","advancedipk"},cbi("advancedplus/advancedipk", {hideapplybtn=true, hidesavebtn=true, hideresetbtn=true}),_("Loading plugins"),30).leaf = true
+ 	if nixio.fs.access('/www/luci-static/kucat/css/style.css') then
+ 	    entry({"admin","system","advancedplus","kucatset"},cbi("advancedplus/kucatset"),_("KuCat Theme Config"),40).leaf = true
++	    entry({"admin", "system","advancedplus","kucatupload"}, form("advancedplus/kucatupload"), _("Desktop background upload"), 80).leaf = true
+ 	end
+ 	if nixio.fs.access('/www/luci-static/argon/css/cascade.css') then
+ 	    entry({"admin", "system", "advancedplus","argon-config"}, form("advancedplus/argon-config"), _("Argon Config"), 50).leaf = true
+@@ -32,7 +33,6 @@ function index()
+ 	    entry({"admin", "system",  "advancedplus","design-config"}, form("advancedplus/design-config"), _("Design Config"), 60).leaf = true
+ 	end
+ 	entry({"admin", "system","advancedplus","upload"}, form("advancedplus/upload"), _("Login Background Upload"), 70).leaf = true
+-	entry({"admin", "system","advancedplus","kucatupload"}, form("advancedplus/kucatupload"), _("Desktop background upload"), 80).leaf = true
+ 	
+ 
+ 	entry({"admin", "system", "advancedplus", "advancedrun"}, call("advanced_run"))
+
+--- a/luci-app-advancedplus/luasrc/model/cbi/advancedplus/advancedset.lua
++++ b/luci-app-advancedplus/luasrc/model/cbi/advancedplus/advancedset.lua
+@@ -24,11 +24,9 @@ ul:depends("qos", true)
+ 
+ e = t:option(Flag, "uhttps",translate('Accessing using HTTPS'), translate('Open the address in the background and use HTTPS for secure access'))
+ 
++if fs.access('/usr/bin/zsh') then
+ e = t:option(Flag, "usshmenu",translate('No backend menu required'), translate('OPENWRT backend and SSH login do not display shortcut menus'))
+-
+-e = t:option(Flag, "wizard",translate('Hide Wizard'), translate('Show or hide the setup wizard menu'))
+-e.default = "0"
+-e.rmempty = false
++end
+ 
+ e = t:option(Flag, "tsoset",translate('TSO optimization for network card interruption'), translate('Turn off the TSO parameters of the INTEL225 network card to improve network interruption'))
+ e.default = "1"
+
+--- a/luci-app-advancedplus/root/etc/init.d/advancedplus
++++ b/luci-app-advancedplus/root/etc/init.d/advancedplus
+@@ -233,8 +233,10 @@ tsoset
+     fi
+     #cpumode=`uci -q get advancedplus.@basic[0].cpumode`
+     #[ ! $cpumode ] || cpumodeset $cpumode   /usr/bin/zsh
++    if [ "$(which zsh)" ]; then
+     sed -i "\/bin\/zsh/d" /etc/profile
+     [ "x$(uci -q get advancedplus.@basic[0].usshmenu)" = "x1" ] || echo '/usr/bin/zsh'  >> /etc/profile
++    fi
+     uci commit netwizard 
+ }
