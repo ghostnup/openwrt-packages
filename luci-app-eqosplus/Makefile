@@ -18,7 +18,7 @@ LUCI_DEPENDS:=+bash +tc +kmod-sched-core +kmod-ifb +kmod-sched +iptables-mod-fil
 LUCI_PKGARCH:=all
 
 PKG_VERSION:=1.2.5
-PKG_RELEASE:=
+PKG_RELEASE:=20231205
 PKG_MAINTAINER:=sirpdboy <herboy2008@gmail.com>
 
 define Package/$(PKG_NAME)/conffiles
