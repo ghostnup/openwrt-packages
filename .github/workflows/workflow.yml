@@ -55,7 +55,7 @@ jobs:
            fi
         }
         function git_sparse_clone() {
-          branch="$1" rurl="$2" localdir="${1##*/}" && shift 2
+          branch="$1" rurl="$2" localdir="${2##*/}" && shift 2
           mkdir -p $localdir
           git clone -b $branch --depth 1 --filter=blob:none --sparse $rurl $localdir
           if [ "$?" != 0 ]; then
@@ -71,7 +71,7 @@ jobs:
           rm -rf $localdir
         }
         function git_sparse_clone2() {
-          commitid="$1" rurl="$2" localdir="${1##*/}" && shift 2
+          commitid="$1" rurl="$2" localdir="${2##*/}" && shift 2
           mkdir -p $localdir
           git clone --filter=blob:none --sparse $rurl $localdir
           cd $localdir
