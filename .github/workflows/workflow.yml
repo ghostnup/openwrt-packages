@@ -184,7 +184,7 @@ jobs:
             [ $ver ] && sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=$ver/" $pkg/Makefile || true
           fi
         done
-        git reset --soft HEAD^ || true
+        git reset --soft
         git add .
         git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
         git push -f
