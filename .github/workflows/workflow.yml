@@ -172,6 +172,7 @@ jobs:
         sed -i 's/\(+luci-compat\)/\1 +luci-theme-argon/' luci-app-argon-config/Makefile || true
         echo "#page>div[data-v-d324f700]:first-child{display:none}
         button.btn_styles.color1[data-v-0d223b54]:last-child{display:none}" >>luci-app-quickstart/htdocs/luci-static/quickstart/style.css || true
+        [[ -f luci-app-eqosplus/po/zh-cn/eqosplus.po && $(grep -c 'Control' luci-app-eqosplus/po/zh-cn/eqosplus.po) -eq 0 ]] && echo -e 'msgid "Control"\nmsgstr "管控"' >> luci-app-eqosplus/po/zh-cn/eqosplus.po
 
     - name: 推送
       run: |
