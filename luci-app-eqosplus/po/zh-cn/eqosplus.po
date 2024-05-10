@@ -59,3 +59,5 @@ msgstr "工作日"
 msgid "Automatic settings"
 msgstr "自动设置"
 
+msgid "Control"
+msgstr "管控"
