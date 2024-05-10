@@ -82,17 +82,6 @@
  				'data-package': name,
  				'class': 'btn cbi-button-action',
  				'click': handleOpkg,
-@@ -986,6 +997,10 @@ function handleOpkg(ev)
- 
- 		var argv = [ cmd, '--force-removal-of-dependent-packages' ];
- 
-+		argv.push('--force-checksum');
-+		
-+		argv.push('--force-depends');
-+
- 		if (rem && rem.checked)
- 			argv.push('--autoremove');
- 
 @@ -1088,7 +1103,7 @@ function updateLists(data)
  
  	return (data ? Promise.resolve(data) : downloadLists()).then(function(data) {
@@ -122,7 +111,7 @@
 
 --- a/luci-app-opkg/root/usr/libexec/opkg-call
 +++ b/luci-app-opkg/root/usr/libexec/opkg-call
-@@ -13,13 +13,13 @@ case "$action" in
+@@ -13,7 +13,7 @@ case "$action" in
  		lists_dir=$(sed -rne 's#^lists_dir \S+ (\S+)#\1#p' /etc/opkg.conf /etc/opkg/*.conf 2>/dev/null | tail -n 1)
  		find "${lists_dir:-/usr/lib/opkg/lists}" -type f '!' -name '*.sig' | xargs -r gzip -cd
  	;;
@@ -131,13 +120,6 @@
  		(
  			opkg="opkg"
  
- 			while [ -n "$1" ]; do
- 				case "$1" in
--					--autoremove|--force-overwrite|--force-removal-of-dependent-packages)
-+					--autoremove|--force-overwrite|--force-removal-of-dependent-packages|--force-checksum|--force-depends)
- 						opkg="$opkg $1"
- 						shift
- 					;;
 @@ -33,10 +33,45 @@ case "$action" in
  			done
  
