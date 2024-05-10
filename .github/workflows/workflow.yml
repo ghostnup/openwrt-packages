@@ -134,6 +134,7 @@ jobs:
         (
         git_clone https://github.com/muink/luci-app-tinyfilemanager
         git_sparse_clone main "https://github.com/linkease/openwrt-app-actions" applications/luci-app-rtbwmon
+        git_sparse_clone main "https://github.com/4IceG/luci-app-irqbalance" luci-app-irqbalance
         ) &
         (
         git clone https://github.com/sirpdboy/luci-theme-kucat -b js --depth 1
