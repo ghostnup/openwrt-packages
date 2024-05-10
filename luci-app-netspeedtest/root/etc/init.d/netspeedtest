@@ -9,7 +9,9 @@
 START=99
 USE_PROCD=1
 
-PROG=/usr/bin/homebox
+key=$(uci get nginx._lan.ssl_certificate_key)
+crt=$(uci get nginx._lan.ssl_certificate)
+PROG="/usr/bin/homebox -key $key -signcert $crt"
 EXTRA_COMMANDS="wantest"
 
 TMP_T=/var/netspeedtest_nstest.tmp
