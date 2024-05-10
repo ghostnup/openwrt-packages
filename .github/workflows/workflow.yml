@@ -160,7 +160,7 @@ jobs:
     - name: 清理打补丁多出来的空文件夹
       run: |
         for dic in $(ls -d ./*); do
-          #[ -f $dic/Makefile ] || rm -rf $dic
+          [ -f $dic/Makefile ] || rm -rf $dic
         done
 
     - name: 自定义修改
