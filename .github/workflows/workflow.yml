@@ -32,7 +32,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
       with:
-        fetch-depth: 1
+        fetch-depth: 0
 
     - name: 设置git身份
       run : |
@@ -178,7 +178,7 @@ jobs:
         Emoji=("🎉" "🤞" "✨" "🎁" "🎈" "🎄" "🎨" "💋" "🍓" "🍕" "🍉" "💐" "🌴" "🚀" "🛸" "🗽" "⛅" "🌈" "🔥" "⛄" "🐶" "🏅" "🦄" "🐤")
         git add .
         git commit -m "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} Sync $(date +%Y-%m-%d" "%H:%M:%S)"
-        for pkg in $(git diff-tree --no-commit-id --name-only HEAD); do
+        for pkg in $(git diff-tree --no-commit-id --name-only main HEAD); do
           if [[ -f $pkg/Makefile && $(grep -c "PKG_RELEASE" $pkg/Makefile) -ge 1 ]]; then
             ver=$(git rev-list --count master $pkg)
             [ $ver ] && sed -i "s/PKG_RELEASE:=.*/PKG_RELEASE:=$ver/" $pkg/Makefile || true
