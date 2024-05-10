@@ -124,6 +124,7 @@ jobs:
         ) &
         (
         git_clone https://github.com/htynkn/openwrt-switch-lan-play && mv -n openwrt-switch-lan-play/package/* ./ && rm -rf openwrt-switch-lan-play
+        git_clone https://github.com/4IceG/luci-app-irqbalance irqbalance && mvdir irqbalance
         ) &
         (
         git_clone https://github.com/haiibo/luci-app-onliner
@@ -134,7 +135,6 @@ jobs:
         (
         git_clone https://github.com/muink/luci-app-tinyfilemanager
         git_sparse_clone main "https://github.com/linkease/openwrt-app-actions" applications/luci-app-rtbwmon
-        git_clone https://github.com/4IceG/luci-app-irqbalance && mvdir luci-app-irqbalance
         ) &
         (
         git clone https://github.com/sirpdboy/luci-theme-kucat -b js --depth 1
@@ -161,7 +161,6 @@ jobs:
       run: |
         for dic in $(ls -d ./*); do
           #[ -f $dic/Makefile ] || rm -rf $dic
-          true
         done
 
     - name: 自定义修改
