@@ -161,6 +161,7 @@ jobs:
       run: |
         for dic in $(ls -d ./*); do
           #[ -f $dic/Makefile ] || rm -rf $dic
+          true
         done
 
     - name: 自定义修改
