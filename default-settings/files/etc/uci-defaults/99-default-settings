@@ -39,7 +39,7 @@ fi
 
 if [[ ! "$version" || "$version" -lt 1 ]]; then
 	uci -q set luci.main.lang='auto'
-	uci -q set luci.main.mediaurlbase=/luci-static/kucat
+	uci -q set luci.main.mediaurlbase=/luci-static/argon
 	uci commit luci
 	
 	uci -q set dropbear.@dropbear[0].Interface='lan'
@@ -167,7 +167,7 @@ if [[ ! "$version" || "$version" -lt 1 ]]; then
 	uci commit nft-qos
 
 	echo "PS1='\[\e[32m\][\[\e[31m\]\u\[\e[33m\]@\[\e[32m\]\h \[\e[36m\]\w\[\e[32m\]]\[\e[0m\]\$\[\e[m\] '" >> /etc/shinit
-	echo "alias grep='grep --color=auto'" >> shinit
+	echo "alias grep='grep --color=auto'" >> /etc/shinit
 fi
 
 # kB
