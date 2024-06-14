@@ -32,7 +32,19 @@
 +LUCI_DEPENDS:=+ksmbd-server +autoshare-ksmbd
  
  include ../../luci.mk
+
+--- a/luci-app-ua2f/Makefile
++++ b/luci-app-ua2f/Makefile
+@@ -2,7 +2,7 @@
+ include $(TOPDIR)/rules.mk
  
+ LUCI_TITLE:=ua2f for luci
+-LUCI_DEPENDS:=
++LUCI_DEPENDS:=+ua2f
+ LUCI_PKGARCH:=all
+ PKG_VERSION:=5.2
+ PKG_RELEASE:=5
+
 --- a/firewall/Makefile
 +++ b/firewall/Makefile
 @@ -28,9 +28,8 @@ define Package/firewall
