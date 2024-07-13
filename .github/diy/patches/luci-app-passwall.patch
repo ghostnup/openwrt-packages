@@ -1,19 +1,14 @@
-From 84d3116655bf3ed833a789f7e095790fb22afeb3 Mon Sep 17 00:00:00 2001
-From: kiddin9 <48883331+kiddin9@users.noreply.github.com>
-Date: Sat, 17 Dec 2022 10:27:49 +0800
-Subject: [PATCH] update
+--- a/luci-app-passwall/root/etc/uci-defaults/luci-passwall
++++ b/luci-app-passwall/root/etc/uci-defaults/luci-passwall
+@@ -41,6 +41,7 @@ chmod +x /usr/share/passwall/*.sh
+ [ "$(uci -q get passwall.@global_xray[0].sniffing)" == "1" ] && [ "$(uci -q get passwall.@global_xray[0].route_only)" != "1" ] && uci -q set passwall.@global_xray[0].sniffing_override_dest=1
+ uci -q delete passwall.@global_xray[0].sniffing
+ uci -q delete passwall.@global_xray[0].route_only
++[ "`which nft`" ] && uci -q set passwall.@global_forwarding[0].use_nft=1
+ uci -q commit passwall
+ 
+ rm -f /tmp/luci-indexcache
 
----
- luci-app-passwall/Makefile                    |   7 +-
- .../luasrc/controller/passwall.lua            |  53 ++++++++
- .../model/cbi/passwall/client/global.lua      |   4 +-
- .../view/passwall/global/status_bottom.htm    | 124 ++++++++++++++++++
- .../root/etc/uci-defaults/luci-passwall       |   2 +
- 5 files changed, 185 insertions(+), 5 deletions(-)
- create mode 100644 luci-app-passwall/luasrc/view/passwall/global/status_bottom.htm
-
-diff --git a/luci-app-passwall/Makefile b/luci-app-passwall/Makefile
-index ed9770f070..1fea4ee29b 100644
 --- a/luci-app-passwall/Makefile
 +++ b/luci-app-passwall/Makefile
 @@ -34,7 +34,38 @@ LUCI_TITLE:=LuCI support for PassWall
