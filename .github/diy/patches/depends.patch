@@ -47,12 +47,14 @@
 
 --- a/firewall/Makefile
 +++ b/firewall/Makefile
-@@ -28,9 +28,8 @@ define Package/firewall
+@@ -28,9 +28,10 @@ define Package/firewall
    SECTION:=net
    CATEGORY:=Base system
    TITLE:=OpenWrt C Firewall
 -  DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 +libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat
-+  DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 +libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat +kmod-ipt-nat6 +iptables-mod-fullconenat +ip6tables-mod-fullconenat +iptables-legacy +ip6tables-legacy +kmod-ipt-offload +miniupnpd-iptables
++  DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 +libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat \
++           +iptables-legacy +ip6tables-legacy +kmod-ipt-nat +kmod-ipt-nat6 +iptables-mod-fullconenat +ip6tables-mod-fullconenat +kmod-ipt-offload +miniupnpd-iptables \
++           +ipset +iptables-mod-conntrack-extra +iptables-mod-iprange +iptables-mod-socket +iptables-mod-tproxy
    PROVIDES:=uci-firewall
 -  CONFLICTS:=firewall4
  endef
@@ -61,13 +63,14 @@
 
 --- a/firewall4/Makefile
 +++ b/firewall4/Makefile
-@@ -25,7 +25,8 @@ define Package/firewall4
+@@ -25,7 +25,9 @@ define Package/firewall4
  	+kmod-nft-core +kmod-nft-fib +kmod-nft-offload \
  	+kmod-nft-nat +kmod-nft-nat6 \
  	+nftables-json \
 -	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
 +	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci \
-+	+kmod-nft-fullcone +iptables +ip6tables +miniupnpd-nftables +kmod-nft-offload +kmod-nft-fullcone
++	+kmod-nft-fullcone +iptables +ip6tables +miniupnpd-nftables +kmod-nft-offload +kmod-nft-fullcone \
++	+kmod-nft-socket +kmod-nft-tproxy +kmod-nft-nat
    EXTRA_DEPENDS:=ucode (>= 2022-03-22)
    PROVIDES:=uci-firewall
  endef
