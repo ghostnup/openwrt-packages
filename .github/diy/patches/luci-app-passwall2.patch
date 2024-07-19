@@ -37,42 +37,15 @@
  	+PACKAGE_$(PKG_NAME)_INCLUDE_IPv6_Nat:ip6tables-mod-nat
  
  define Package/$(PKG_NAME)/config
-@@ -44,34 +59,8 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_IPv6_Nat
+@@ -71,7 +86,6 @@ config PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
  
- if PACKAGE_$(PKG_NAME)
- 
--config PACKAGE_$(PKG_NAME)_Iptables_Transparent_Proxy
--	bool "Iptables Transparent Proxy"
--	select PACKAGE_dnsmasq-full
--	select PACKAGE_dnsmasq_full_ipset
--	select PACKAGE_ipset
--	select PACKAGE_iptables
--	select PACKAGE_iptables-nft
--	select PACKAGE_iptables-zz-legacy
--	select PACKAGE_iptables-mod-conntrack-extra
--	select PACKAGE_iptables-mod-iprange
--	select PACKAGE_iptables-mod-socket
--	select PACKAGE_iptables-mod-tproxy
--	select PACKAGE_kmod-ipt-nat
--	default y if ! PACKAGE_firewall4
--
--config PACKAGE_$(PKG_NAME)_Nftables_Transparent_Proxy
--	bool "Nftables Transparent Proxy"
--	select PACKAGE_dnsmasq-full
--	select PACKAGE_dnsmasq_full_nftset
--	select PACKAGE_nftables
--	select PACKAGE_kmod-nft-socket
--	select PACKAGE_kmod-nft-tproxy
--	select PACKAGE_kmod-nft-nat
--	default y if PACKAGE_firewall4
--
  config PACKAGE_$(PKG_NAME)_INCLUDE_Haproxy
  	bool "Include Haproxy"
 -	select PACKAGE_haproxy
  	default y if aarch64||arm||i386||x86_64
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_Hysteria
-@@ -87,8 +76,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy
+@@ -87,8 +101,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_NaiveProxy
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev_Client
  	bool "Include Shadowsocks Libev Client"
@@ -81,7 +54,7 @@
  	default y
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev_Server
-@@ -99,7 +86,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev_Server
+@@ -99,7 +111,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Libev_Server
  config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Client
  	bool "Include Shadowsocks Rust Client"
  	depends on aarch64||arm||i386||mips||mipsel||x86_64
@@ -89,7 +62,7 @@
  	default y if aarch64
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Server
-@@ -110,8 +96,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Server
+@@ -110,8 +121,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_Shadowsocks_Rust_Server
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Client
  	bool "Include ShadowsocksR Libev Client"
@@ -98,7 +71,7 @@
  	default y
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server
-@@ -121,12 +105,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server
+@@ -121,12 +130,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR_Libev_Server
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_Simple_Obfs
  	bool "Include Simple-Obfs (Shadowsocks Plugin)"
@@ -111,14 +84,8 @@
  	default y if aarch64||arm||i386||x86_64
  
  config PACKAGE_$(PKG_NAME)_INCLUDE_tuic_client
-@@ -137,7 +119,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_tuic_client
+@@ -137,7 +144,6 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_tuic_client
  
- config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin
- 	bool "Include V2ray-Plugin (Shadowsocks Plugin)"
--	select PACKAGE_v2ray-plugin
- 	default y if aarch64||arm||i386||x86_64
- 
- endif
  config PACKAGE_$(PKG_NAME)_INCLUDE_V2ray_Plugin
  	bool "Include V2ray-Plugin (Shadowsocks Plugin)"
 -	select PACKAGE_v2ray-plugin
