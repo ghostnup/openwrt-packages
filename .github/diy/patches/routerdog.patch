@@ -1,3 +1,15 @@
+--- a/routergo/Makefile
++++ b/routergo/Makefile
+@@ -27,7 +27,7 @@ define Package/$(PKG_NAME)
+ 	CATEGORY:=Network
+ 	SUBMENU:=Web Servers/Proxies
+ 	TITLE:=RouterGo
+-	DEPENDS:=@(x86_64||aarch64||arm) +docker
++	DEPENDS:=@(x86_64||aarch64||arm) +docker +luci-app-linkease
+ 	URL:=https://github.com/Carseason/openwrt-packages
+ endef
+ 
+
 --- a/luci-app-routerdog/luasrc/controller/routerdog.lua
 +++ b/luci-app-routerdog/luasrc/controller/routerdog.lua
 @@ -2,7 +2,7 @@ module("luci.controller.routerdog", package.seeall)
