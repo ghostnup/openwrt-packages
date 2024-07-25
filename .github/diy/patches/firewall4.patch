@@ -1,0 +1,53 @@
+--- a/firewall4/Makefile
++++ b/firewall4/Makefile
+@@ -38,10 +38,13 @@ endef
+ define Package/firewall4/conffiles
+ /etc/config/firewall
+ /etc/nftables.d/
++/etc/firewall.include
+ endef
+ 
+ define Package/firewall4/install
+ 	$(CP) -a $(PKG_BUILD_DIR)/root/* $(1)/
++	$(INSTALL_DIR) $(1)/etc/
++	$(INSTALL_CONF) ./files/firewall.include $(1)/etc/firewall.include
+ endef
+ 
+ define Build/Compile
+diff --git a/firewall4/files/firewall.include b/firewall4/files/firewall.include
+new file mode 100644
+index 00000000000000..e69de29bb2d1d6
+diff --git a/firewall4/patches/100-fw4-support-script.patch b/firewall4/patches/100-fw4-support-script.patch
+new file mode 100644
+index 00000000000000..9dd6208392e2fd
+--- /dev/null
++++ b/firewall4/patches/100-fw4-support-script.patch
+@@ -0,0 +1,12 @@
++diff --git a/root/sbin/fw4 b/root/sbin/fw4
++index 3e7388b..4952ed0 100755
++--- a/root/sbin/fw4
+++++ b/root/sbin/fw4
++@@ -33,6 +33,7 @@ start() {
++ 		ACTION=start \
++ 			ucode -S -i $MAIN | nft $VERBOSE -f /proc/self/fd/0
++ 	} 1000>$LOCK
+++	test -f /etc/firewall.include && sh /etc/firewall.include
++ }
++ 
++ print() {
+diff --git a/firewall4/patches/200-fw4-hotplug-fork.patch b/firewall4/patches/200-fw4-hotplug-fork.patch
+new file mode 100644
+index 00000000000000..7594291ce16c72
+--- /dev/null
++++ b/firewall4/patches/200-fw4-hotplug-fork.patch
+@@ -0,0 +1,10 @@
++diff --git a/root/etc/hotplug.d/iface/20-firewall b/root/etc/hotplug.d/iface/20-firewall
++index d0f030b..9a8132c 100644
++--- a/root/etc/hotplug.d/iface/20-firewall
+++++ b/root/etc/hotplug.d/iface/20-firewall
++@@ -14,4 +14,4 @@ has_zone() {
++ has_zone || exit 0
++ 
++ logger -t firewall "Reloading firewall due to $ACTION of $INTERFACE ($DEVICE)"
++-fw4 -q reload
+++fw4 -q reload &
