@@ -52,7 +52,7 @@
    DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 \
  	+libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat \
 -	+iptables-mod-fullconenat
-+	+ip6tables-mod-fullconenat +iptables-legacy +ip6tables-legacy +kmod-ipt-nat6 +kmod-ipt-offload +miniupnpd-iptables \
++	+ip6tables-mod-fullconenat +iptables-legacy +ip6tables-legacy +kmod-ipt-nat6 +kmod-ipt-offload \
 +	+ipset +iptables-mod-conntrack-extra +iptables-mod-iprange +iptables-mod-socket +iptables-mod-tproxy
    PROVIDES:=uci-firewall
 -  CONFLICTS:=firewall4
@@ -68,7 +68,7 @@
  	+nftables-json \
 -	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
 +	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci \
-+	+iptables +ip6tables +miniupnpd-nftables +kmod-nft-socket +kmod-nft-tproxy
++	+iptables +ip6tables +kmod-nft-socket +kmod-nft-tproxy
    EXTRA_DEPENDS:=ucode (>=2022.03.22)
    PROVIDES:=uci-firewall
  endef
@@ -87,18 +87,6 @@
  
  define Package/luci-app-homeassistant/conffiles
  /etc/config/homeassistant
-
---- a/luci-app-unblockneteasemusic/Makefile
-+++ b/luci-app-unblockneteasemusic/Makefile
-@@ -5,7 +5,7 @@
- include $(TOPDIR)/rules.mk
- 
- LUCI_TITLE:=LuCI support for UnblockNeteaseMusic (JavaScript)
--LUCI_DEPENDS:=+dnsmasq-full +firewall4 +node \
-+LUCI_DEPENDS:=+dnsmasq-full +UnblockNeteaseMusic +node \
- 	@(PACKAGE_libustream-mbedtls||PACKAGE_libustream-openssl||PACKAGE_libustream-wolfssl)
- LUCI_PKGARCH:=all
- 
 
 --- a/k3screenctrl/Makefile
 +++ b/k3screenctrl/Makefile
@@ -175,29 +163,6 @@
  PKG_MAINTAINER:=Oray <developer@oray.com>
  
  include $(INCLUDE_DIR)/package.mk
-
---- a/luci-app-upnp/Makefile
-+++ b/luci-app-upnp/Makefile
-@@ -7,7 +7,7 @@
- include $(TOPDIR)/rules.mk
- 
- LUCI_TITLE:=Universal Plug & Play configuration module
--LUCI_DEPENDS:=+miniupnpd +rpcd-mod-ucode
-+LUCI_DEPENDS:=+rpcd-mod-ucode
- 
- include ../../luci.mk
- 
-
---- a/luci-app-openclash/Makefile
-+++ b/luci-app-openclash/Makefile
-@@ -32,7 +32,7 @@ define Package/$(PKG_NAME)
- 	TITLE:=LuCI support for clash
- 	PKGARCH:=all
- 	DEPENDS:=+dnsmasq-full +coreutils +coreutils-nohup +bash +curl +ca-certificates +ipset +ip-full \
--	+libcap +libcap-bin +ruby +ruby-yaml +kmod-tun +unzip
-+	+libcap +libcap-bin +ruby +ruby-yaml +kmod-tun +unzip +kmod-inet-diag +kmod-ipt-nat +iptables-mod-tproxy +iptables-mod-extra
- 	MAINTAINER:=vernesong
- endef
 
 --- a/wifidog-wiwiz/Makefile
 +++ b/wifidog-wiwiz/Makefile
