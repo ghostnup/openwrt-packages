@@ -1,0 +1,89 @@
+--- a/luci-app-my-dnshelper/htdocs/luci-static/resources/view/my-dnshelper/filters.js
++++ b/luci-app-my-dnshelper/htdocs/luci-static/resources/view/my-dnshelper/filters.js
+@@ -38,12 +38,12 @@ return view.extend({
+ 		s.anonymous = true;
+ 
+ 		o = s.option(form.DynamicList, "url", _("Filter Rules Subscription URL"));
+-		o.value("https://cdn.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf", _("anti-AD (Privacy-Protect|Preferred)"));
+-		o.value("https://gcore.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt", _("AdGuard Filter"));
+-		o.value("https://gcore.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt", _("Cats-Team Hosts"));
+-		o.value("https://cdn.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt", _("yhosts"));
+-		o.value("https://cdn.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt", _("Anti-Mal Hosts"));
+-		o.value("https://cdn.jsdelivr.net/gh/kongfl888/ad-rules/antihosts-gambling-porn.txt", _("Anti-Gambling-Porn"));
++		o.value("https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf", _("anti-AD (Privacy-Protect|Preferred)"));
++		o.value("https://fastly.jsdelivr.net/gh/AdguardTeam/AdGuardSDNSFilter@gh-pages/Filters/filter.txt", _("AdGuard Filter"));
++		o.value("https://fastly.jsdelivr.net/gh/Cats-Team/AdRules/hosts.txt", _("Cats-Team Hosts"));
++		o.value("https://fastly.jsdelivr.net/gh/VeleSila/yhosts/hosts.txt", _("yhosts"));
++		o.value("https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/malhosts.txt", _("Anti-Mal Hosts"));
++		o.value("https://fastly.jsdelivr.net/gh/kongfl888/ad-rules/antihosts-gambling-porn.txt", _("Anti-Gambling-Porn"));
+ 		o.value("https://easylist-downloads.adblockplus.org/easylistchina+easylist.txt", _("Easylistchina+Easylist"));
+ 
+ 		o = s.option(form.Button, "bfilter");
+
+--- a/luci-app-my-dnshelper/htdocs/luci-static/resources/view/my-dnshelper/settings.js
++++ b/luci-app-my-dnshelper/htdocs/luci-static/resources/view/my-dnshelper/settings.js
+@@ -162,11 +162,6 @@ return view.extend({
+ 		o.rmempty = false;
+ 		o.default = 'false';
+ 
+-		o = s.option(form.Flag, "block_google", _("Block Google Website and API"));
+-		o.description = _("Leave the network for a period of time");
+-		o.rmempty = false;
+-		o.default = 'false';
+-
+ 		o = s.option(form.Flag, "my_github", _("Easy to Visit GitHub Website"));
+ 		o.rmempty = false;
+ 		o.default = 'false';
+
+--- a/my-dnshelper/files/etc/config/my-dnshelper
++++ b/my-dnshelper/files/etc/config/my-dnshelper
+@@ -8,7 +8,7 @@ config my-dnshelper
+ 	option block_games '0'
+ 	option block_short '0'
+ 	option block_google '0'
+-	option dns_detect '0'
++	option dns_detect '1'
+ 	option app_test '1'
+ 	option dns_cache '600'
+ 	option dns_check '1'
+@@ -20,6 +20,5 @@ config my-dnshelper
+ 	option dns_log '0'
+ 	option rev_log '0'
+ 	option my_github '0'
+-	option time_update '12'
+-
+-
++	option time_update '24'
++	list url 'https://fastly.jsdelivr.net/gh/privacy-protection-tools/anti-AD@master/adblock-for-dnsmasq.conf'
+
+--- a/luci-app-my-dnshelper/root/etc/uci-defaults/luci-my-dnshelper
++++ b/luci-app-my-dnshelper/root/etc/uci-defaults/luci-my-dnshelper
+@@ -1,12 +1,22 @@
+ #!/bin/sh
++uci -q batch <<-EOF >/dev/null 2>&1
++	delete ucitrack.@my-dnshelper[-1]
++	add ucitrack my-dnshelper
++	set ucitrack.@my-dnshelper[-1].init=my-dnshelper
++	commit ucitrack
++	delete firewall.my_dnshelper
++	set firewall.my_dnshelper=include
++	set firewall.my_dnshelper.type=script
++	set firewall.my_dnshelper.path=/var/etc/my-dnshelper.include
++	set firewall.my_dnshelper.reload=1
++	commit firewall
++EOF
+ 
+-if [ -f /usr/bin/my-dnshelper ];then
+ chmod 0774 /usr/bin/my-dnshelper  >/dev/null 2>&1
+-else
+-echo "`date -R` /usr/bin/my-dnshelper not found!" >> /tmp/my-dnshelper.log
+-fi
++chmod 0774 /etc/init.d/my-dnshelper >/dev/null 2>&1
++chmod 0774 /usr/share/my-dnshelper/* >/dev/null 2>&1
++chmod 0664 /etc/my-dnshelper/* >/dev/null 2>&1
++chmod 0664 /etc/config/my-dnshelper >/dev/null 2>&1
+ /etc/init.d/my-dnshelper enable  >/dev/null 2>&1
+-/etc/init.d/rpcd reload >/dev/null 2>&1
+ rm -f /tmp/my-dnshelper.d/appver.txt
+-rm -rf /tmp/luci-*
+ exit 0
