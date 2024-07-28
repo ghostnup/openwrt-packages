@@ -19,7 +19,7 @@
 +    		uci commit nginx
 +    		/etc/init.d/nginx reload
 +    	else
-+	         uci -q set uhttpd.main.redirect_https='0'
++	         uci -q set uhttpd.main.redirect_https='1'
  	         uci commit uhttpd
 -	         /etc/init.d/uhttpd restart
 -	    }
@@ -42,7 +42,7 @@
 +	         sed -i 's/option return/# option return/' /etc/config/nginx
 +	         /etc/init.d/nginx reload
 +		else
-+	         uci -q set uhttpd.main.redirect_https='1'
++	         uci -q set uhttpd.main.redirect_https='0'
 +	         uci commit uhttpd
 +	         /etc/init.d/uhttpd reload
 +        fi
