@@ -45,34 +45,6 @@
  PKG_VERSION:=5.2
  PKG_RELEASE:=5
 
---- a/firewall/Makefile
-+++ b/firewall/Makefile
-@@ -32,9 +32,9 @@ define Package/firewall
-   TITLE:=OpenWrt C Firewall
-   DEPENDS:=+libubox +libubus +libuci +libip4tc +IPV6:libip6tc +libiptext +IPV6:libiptext6 \
- 	+libxtables +kmod-ipt-core +kmod-ipt-conntrack +IPV6:kmod-nf-conntrack6 +kmod-ipt-nat \
--	+iptables-mod-fullconenat
-+	+ip6tables-mod-fullconenat +iptables-legacy +ip6tables-legacy +kmod-ipt-nat6 +kmod-ipt-offload \
-+	+ipset +iptables-mod-conntrack-extra +iptables-mod-iprange +iptables-mod-socket +iptables-mod-tproxy
-   PROVIDES:=uci-firewall
--  CONFLICTS:=firewall4
- endef
- 
- define Package/firewall/description
-
---- a/firewall4/Makefile
-+++ b/firewall4/Makefile
-@@ -25,7 +25,8 @@ define Package/firewall4
- 	+kmod-nft-core +kmod-nft-fib +kmod-nft-offload \
- 	+kmod-nft-nat +kmod-nft-fullcone \
- 	+nftables-json \
--	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci
-+	+ucode +ucode-mod-fs +ucode-mod-ubus +ucode-mod-uci \
-+	+iptables +ip6tables +kmod-nft-socket +kmod-nft-tproxy
-   EXTRA_DEPENDS:=ucode (>=2022.03.22)
-   PROVIDES:=uci-firewall
- endef
-
 --- a/msmtp/Makefile
 +++ b/msmtp/Makefile
 @@ -46,7 +46,7 @@ endef
