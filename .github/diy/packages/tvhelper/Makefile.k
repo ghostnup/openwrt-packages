@@ -18,7 +18,7 @@ define Package/tvhelper
 endef
 
 define Package/tvhelper/description
-  Installs the tv.sh script from GitHub.
+  tv.sh script from @wukongdaily.
 endef
 
 define Build/Prepare
