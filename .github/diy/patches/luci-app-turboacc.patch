@@ -9,7 +9,7 @@
  
  PKG_LICENSE:=GPL-3.0-only
  PKG_MAINTAINER:=Lean <coolsnowwolf@gmail.com>
-@@ -21,11 +21,7 @@ PKG_CONFIG_DEPENDS:= \
+@@ -21,10 +21,7 @@ PKG_CONFIG_DEPENDS:= \
  	CONFIG_PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE_DRV
  
  LUCI_TITLE:=LuCI support for Flow Offload / Shortcut-FE
@@ -17,11 +17,19 @@
 -	+PACKAGE_$(PKG_NAME)_INCLUDE_BBR_CCA:kmod-tcp-bbr \
 -	+PACKAGE_$(PKG_NAME)_INCLUDE_DNSFORWARDER:dnsforwarder \
 -	+PACKAGE_$(PKG_NAME)_INCLUDE_DNSPROXY:dnsproxy \
--	+PACKAGE_$(PKG_NAME)_INCLUDE_OFFLOADING:kmod-ipt-offload \
 +LUCI_DEPENDS:=+PACKAGE_$(PKG_NAME)_INCLUDE_BBR_CCA:kmod-tcp-bbr \
+ 	+PACKAGE_$(PKG_NAME)_INCLUDE_OFFLOADING:kmod-ipt-offload \
  	+PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE:kmod-fast-classifier \
  	+PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE_CM:kmod-shortcut-fe-cm \
- 	+PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE_DRV:kmod-shortcut-fe-drv
+@@ -50,7 +47,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE_DRV
+ 	bool "Include Shortcut-FE ECM"
+ 	depends on PACKAGE_$(PKG_NAME)_INCLUDE_OFFLOADING=n
+ 	depends on PACKAGE_$(PKG_NAME)_INCLUDE_SHORTCUT_FE_CM=n
+-	depends on (TARGET_ipq60xx||TARGET_ipq806x||TARGET_ipq807x)
++	depends on (TARGET_ipq60xx||TARGET_ipq806x||TARGET_ipq807x||TARGET_qualcommax)
+ 	default y
+ 
+ config PACKAGE_$(PKG_NAME)_INCLUDE_BBR_CCA
 
 --- a/luci-app-turboacc/luasrc/controller/turboacc.lua
 +++ b/luci-app-turboacc/luasrc/controller/turboacc.lua
@@ -208,3 +216,37 @@
 -	option dns_caching '0'
 -	option dns_caching_mode '1'
 -	option dns_caching_dns '114.114.114.114,114.114.115.115,223.5.5.5,223.6.6.6,180.76.76.76,119.29.29.29,119.28.28.28,1.2.4.8,210.2.4.8'
+
+--- a/shortcut-fe/shortcut-fe/Makefile
++++ b/shortcut-fe/shortcut-fe/Makefile
+@@ -58,7 +58,6 @@ define KernelPackage/shortcut-fe-cm
+ 	   CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
+ 	   CONFIG_NF_CONNTRACK_EVENTS=y \
+ 	   CONFIG_XFRM=y
+-  CONFLICTS:=kmod-shortcut-fe-drv
+ endef
+ 
+ define KernelPackage/shortcut-fe-cm/Description
+
+--- a/shortcut-fe/fast-classifier/Makefile
++++ b/shortcut-fe/fast-classifier/Makefile
+@@ -32,7 +32,6 @@ define KernelPackage/fast-classifier/Default
+ 	   CONFIG_NF_CONNTRACK_CHAIN_EVENTS=y \
+ 	   CONFIG_NF_CONNTRACK_MARK=y \
+ 	   CONFIG_XFRM=y
+-  CONFLICTS:=kmod-shortcut-fe-drv kmod-shortcut-fe-cm
+ endef
+ 
+ define KernelPackage/fast-classifier
+
+--- a/shortcut-fe/simulated-driver/Makefile
++++ b/shortcut-fe/simulated-driver/Makefile
+@@ -30,7 +30,7 @@ define KernelPackage/shortcut-fe-drv
+   SECTION:=kernel
+   CATEGORY:=Kernel modules
+   SUBMENU:=Network Support
+-  DEPENDS:=@TARGET_qualcommax +kmod-shortcut-fe
++  DEPENDS:=@(TARGET_ipq806x||TARGET_ipq807x||TARGET_qualcommax) +kmod-shortcut-fe
+   KCONFIG:= \
+ 	   CONFIG_NET_CLS_ACT=y \
+ 	   CONFIG_XFRM=y
